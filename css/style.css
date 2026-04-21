@@ -897,3 +897,170 @@ body {
 .progress-bar {
     transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
+/* =========================================
+   Show Money (Live Board) Specific Styles
+   ========================================= */
+.live-board-bg {
+    background: radial-gradient(circle at 50% 40%, #0d1b14 0%, #05080f 70%);
+    height: 100vh;
+    overflow: hidden; /* Prevent scrolling on the big screen */
+    display: flex;
+    flex-direction: column;
+}
+
+.transparent-nav {
+    background: transparent !important;
+    border-bottom: none !important;
+}
+
+.align-center {
+    align-items: center;
+}
+
+.live-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--accent-green);
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 2px;
+    margin-right: 20px;
+}
+
+.icon-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 20px;
+    cursor: pointer;
+    transition: color 0.2s;
+    margin-left: 10px;
+}
+
+.icon-btn:hover {
+    color: white;
+}
+
+.live-board-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 20px 60px 50px 60px;
+}
+
+.mega-display {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: -50px; /* Optical center adjustment */
+}
+
+.tracking-title {
+    color: var(--text-muted);
+    letter-spacing: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+/* The Star of the Show */
+.mega-money {
+    font-size: 12vw; /* Scales with screen width */
+    font-weight: 900;
+    color: var(--accent-green);
+    line-height: 1.1;
+    text-shadow: 0 0 80px rgba(34, 197, 94, 0.4);
+    font-variant-numeric: tabular-nums; /* Keeps numbers from jumping */
+}
+
+.mega-stats-row {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    margin-top: 10px;
+}
+
+.m-stat {
+    text-align: center;
+}
+
+.m-stat span {
+    display: block;
+    color: var(--text-muted);
+    font-size: 12px;
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+}
+
+.m-stat h3 {
+    font-size: 28px;
+    font-weight: 800;
+}
+
+.m-divider {
+    width: 1px;
+    height: 40px;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Bottom Company Breakdown */
+.tracking-title-small {
+    color: var(--text-muted);
+    letter-spacing: 4px;
+    font-size: 11px;
+    margin-bottom: 15px;
+}
+
+.breakdown-grid {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+}
+
+/* Hide scrollbar for clean look */
+.breakdown-grid::-webkit-scrollbar { display: none; }
+
+.breakdown-card {
+    flex: 1;
+    min-width: 250px;
+    background: rgba(17, 24, 39, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* Stresses the money over the name */
+.b-money {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--accent-green);
+    margin-bottom: 15px;
+}
+
+.b-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.b-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-main);
+    max-width: 70%;
+    line-height: 1.3;
+}
+
+.b-investors {
+    font-size: 11px;
+    color: var(--text-muted);
+}

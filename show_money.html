@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GSVC Live Board</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="live-board-bg">
+
+    <header class="top-nav transparent-nav">
+        <div class="logo-area">
+            <img src="assets/2.png" alt="SABS Logo" class="nav-logo">
+            <h1>GSVC <span>Fayston FGC • Live Board</span></h1>
+        </div>
+        <nav class="nav-links align-center">
+            <div class="live-status"><span class="pulse-dot"></span> LIVE</div>
+            <a href="index.html"><i class="ph-duotone ph-squares-four"></i> Dashboard</a>
+            <a href="#"><i class="ph-duotone ph-trophy"></i> Leaderboard</a>
+            <button id="fullscreen-btn" class="icon-btn"><i class="ph-bold ph-corners-out"></i></button>
+        </nav>
+    </header>
+
+    <main class="live-board-container">
+        <div class="mega-display">
+            <h4 class="tracking-title">TOTAL INVESTED</h4>
+            <h1 id="mega-money-display" class="mega-money">₩0</h1>
+            
+            <div class="mega-stats-row">
+                <div class="m-stat">
+                    <span>INVESTORS</span>
+                    <h3 id="mega-investors">0</h3>
+                </div>
+                <div class="m-divider"></div>
+                <div class="m-stat">
+                    <span>VENTURES</span>
+                    <h3 id="mega-ventures">0</h3>
+                </div>
+                <div class="m-divider"></div>
+                <div class="m-stat">
+                    <span>FUNDED</span>
+                    <h3 id="mega-funded">0</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="breakdown-section">
+            <h5 class="tracking-title-small">COMPANY BREAKDOWN</h5>
+            <div class="breakdown-grid" id="breakdown-grid">
+                </div>
+        </div>
+    </main>
+
+    <script src="js/show-money.js"></script>
+</body>
+</html>
