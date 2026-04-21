@@ -853,3 +853,23 @@ body {
     box-shadow: 0 6px 20px rgba(34, 197, 94, 0.5);
     background: linear-gradient(90deg, #10b981, var(--accent-green));
 }
+
+/* =========================================
+   Hero Title Alignment Fix
+   ========================================= */
+.hero-title-wrapper {
+    display: flex;
+    align-items: flex-start; /* Aligns the icon with the top line of text */
+    gap: 12px;               /* Space between the icon and the text */
+    margin-bottom: 10px;
+}
+
+.hero-title-wrapper h2 {
+    margin-bottom: 0;        /* Let the wrapper handle the spacing */
+}
+
+.hero-title-wrapper .globe-icon {
+    font-size: 42px;         /* Make the icon slightly bigger to balance the two lines */
+    margin-right: 0;         /* Clear the old margin */
+    margin-top: -4px;        /* Tiny optical adjustment so the top of the globe matches the top of the "T" */
+}
