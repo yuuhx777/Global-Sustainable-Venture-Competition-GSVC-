@@ -65,9 +65,20 @@ function updateBalanceUI(balance) {
 // 2. FETCHING & RENDERING DATA
 // ==========================================
 async function fetchDashboardData() {
-    // The database natively sorts them by total invested, highest to lowest!
+    // Fetch Ventures
     const { data: ventures } = await supabaseClient.from('ventures').select('*').order('total_invested', { ascending: false });
+    
+    // Fetch Global Investments for stats
     const { data: investments } = await supabaseClient.from('investments').select('*');
+
+    // Fetch ONLY the current user's investments, and JOIN the venture title
+    const { data: myInvestments } = await supabaseClient
+        .from('investments')
+        .select(`
+            amount,
+            ventures ( title )
+        `)
+        .eq('user_id', currentUser.id);
 
     // Calculate Global Stats
     let totalInvestedGlobal = 0;
@@ -83,23 +94,54 @@ async function fetchDashboardData() {
     document.querySelectorAll('.stat-card h3')[1].innerText = uniqueInvestors.size; 
     document.querySelectorAll('.stat-card h3')[2].innerText = ventures.length; 
 
-    // Render the UI with the newly sorted data
+    // Render the UI
     renderVentures(ventures);
     renderLeaderboard(ventures);
+    renderMyInvestments(myInvestments); // <-- New function call
+}
+
+function renderMyInvestments(myInvestments) {
+    const list = document.getElementById('my-investments-list');
+    if (!list) return;
+
+    if (!myInvestments || myInvestments.length === 0) {
+        list.innerHTML = `<li class="empty-state">No investments yet — pick a venture and invest! 🌱</li>`;
+        return;
+    }
+
+    // Group the investments by venture (so multiple investments in one idea are combined)
+    const groupedInvestments = {};
+    myInvestments.forEach(inv => {
+        const title = inv.ventures.title;
+        if (!groupedInvestments[title]) {
+            groupedInvestments[title] = 0;
+        }
+        groupedInvestments[title] += Number(inv.amount);
+    });
+
+    list.innerHTML = ''; // Clear the "empty state" message
+
+    // Create the HTML for each grouped investment
+    Object.entries(groupedInvestments).forEach(([title, totalAmount]) => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+            <div class="rank"><span class="medal-text">🌱</span> ${title}</div>
+            <div class="score highlight-text">${formatMoney(totalAmount)}</div>
+        `;
+        list.appendChild(li);
+    });
 }
 
 function renderLeaderboard(ventures) {
     const list = document.querySelector('.leaderboard-list');
     if (!list) return;
     
-    list.innerHTML = ''; // Clear out the hardcoded HTML
+    list.innerHTML = ''; 
 
     const medals = ['🥇', '🥈', '🥉'];
 
     ventures.forEach((v, index) => {
-        // Assign a medal to the top 3, and a number to the rest
         const rankDisplay = index < 3 ? `<span class="medal">${medals[index]}</span>` : `<span class="medal-text">#${index + 1}</span>`;
-        
         const li = document.createElement('li');
         li.innerHTML = `
             <div class="rank">${rankDisplay} ${v.title}</div>
