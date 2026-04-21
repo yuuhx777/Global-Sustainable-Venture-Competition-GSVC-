@@ -1,24 +1,21 @@
 const SUPABASE_URL = 'https://tsweufcmgrcjtgiqlcji.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRzd2V1ZmNtZ3JjanRnaXFsY2ppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3ODA5MDQsImV4cCI6MjA5MjM1NjkwNH0.dMDqj_n0_w3sURSRo-_EOtrvLc5p8fu6WsAT7bs8qLI'; 
 
-// Renamed from 'supabase' to 'supabaseClient' to avoid conflicting with the CDN's global object
 let supabaseClient;
 
 // 1. SAFE INITIALIZATION
 try {
-    // Use the global 'supabase' object from the CDN to create your client
     supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     console.log("Supabase initialized successfully!");
 } catch (err) {
     console.error("Supabase failed to load. Is an adblocker blocking the CDN?", err);
 }
 
-// 2. THE GLOBAL LOGIN FUNCTION (Triggered directly by HTML)
+// 2. THE GLOBAL LOGIN FUNCTION
 window.handleGoogleLogin = async function() {
     console.log("Google Login button was clicked!");
     const authMsg = document.getElementById('auth-msg');
     
-    // Check if Supabase even loaded
     if (!supabaseClient) {
         authMsg.innerText = "Error: Database blocked. Try disabling your adblocker and refreshing.";
         authMsg.style.color = "#ef4444";
@@ -28,10 +25,13 @@ window.handleGoogleLogin = async function() {
     authMsg.innerText = "Redirecting to Google...";
     authMsg.style.color = "var(--accent-green)";
     
+    // Grab a clean version of the URL without any extra hash data attached
+    const cleanRedirectUrl = window.location.origin + window.location.pathname;
+    
     const { error } = await supabaseClient.auth.signInWithOAuth({
         provider: 'google',
         options: {
-            redirectTo: window.location.href
+            redirectTo: cleanRedirectUrl
         }
     });
 
@@ -42,7 +42,7 @@ window.handleGoogleLogin = async function() {
     }
 };
 
-// 3. UI LOGIC & SESSION CHECKING (Runs when page loads)
+// 3. UI LOGIC & SESSION LISTENER
 document.addEventListener("DOMContentLoaded", () => {
     console.log("DOM is loaded, running UI scripts...");
 
@@ -73,32 +73,35 @@ document.addEventListener("DOMContentLoaded", () => {
         window.location.reload(); 
     });
 
-    // Session Check
+    // Authentication Listener (The Magic Fix)
     const loginScreen = document.getElementById('login-screen');
     const dashboardWrapper = document.getElementById('dashboard-wrapper');
     const authMsg = document.getElementById('auth-msg');
 
-    async function checkUser() {
-        if (!supabaseClient) return; // Skip check if Supabase didn't load
-        
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        
-        if (session) {
-            const userEmail = session.user.email;
-            if (userEmail.endsWith('@faystonsongdo.org')) {
-                loginScreen.style.display = 'none';
-                dashboardWrapper.style.display = 'block';
-                console.log("Logged in securely as:", userEmail);
+    if (supabaseClient) {
+        // This actively watches for login state changes, including when the URL token is parsed!
+        supabaseClient.auth.onAuthStateChange((event, session) => {
+            console.log("Auth status changed:", event);
+            
+            if (session) {
+                const userEmail = session.user.email;
+                
+                // IMPORTANT: Ensure you are testing with a @faystonsongdo.org email!
+                if (userEmail.endsWith('@faystonsongdo.org')) {
+                    loginScreen.style.display = 'none';
+                    dashboardWrapper.style.display = 'block';
+                    console.log("Logged in securely as:", userEmail);
+                } else {
+                    supabaseClient.auth.signOut(); // Kick them out if wrong domain
+                    authMsg.innerText = "Access denied: Must use a @faystonsongdo.org account.";
+                    authMsg.style.color = "#ef4444"; 
+                    loginScreen.style.display = 'flex';
+                    dashboardWrapper.style.display = 'none';
+                }
             } else {
-                await supabaseClient.auth.signOut();
-                authMsg.innerText = "Access denied: Must use a @faystonsongdo.org account.";
-                authMsg.style.color = "#ef4444"; 
+                loginScreen.style.display = 'flex';
+                dashboardWrapper.style.display = 'none';
             }
-        } else {
-            loginScreen.style.display = 'flex';
-            dashboardWrapper.style.display = 'none';
-        }
+        });
     }
-
-    checkUser();
 });
