@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GSVC Live Leaderboard</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+    <header class="top-nav">
+        <div class="logo-area">
+            <img src="assets/2.png" alt="SABS Logo" class="nav-logo">
+            <h1>GSVC <span>Fayston FGC</span></h1>
+        </div>
+        <nav class="nav-links">
+            <a href="index.html"><i class="ph-duotone ph-rocket-launch"></i> Dashboard</a>
+            <a href="show-money.html"><i class="ph-duotone ph-currency-krw"></i> Show Money</a>
+            <a href="leaderboard.html" class="active"><i class="ph-duotone ph-trophy"></i> Leaderboard</a>
+            <a href="#"><i class="ph-duotone ph-gear"></i> Admin</a>
+        </nav>
+    </header>
+
+    <main class="dashboard-container">
+        <section class="lb-hero animate-up delay-1">
+            <div class="lb-icon-box">
+                <i class="ph-fill ph-trophy"></i>
+            </div>
+            <div>
+                <span class="eyebrow">FAYSTON FGC</span>
+                <h2>Live Leaderboard</h2>
+            </div>
+        </section>
+
+        <div class="content-grid animate-up delay-2">
+            
+            <section class="rankings-section">
+                <h3 class="section-title"><i class="ph-duotone ph-buildings highlight"></i> Company Rankings</h3>
+                <div class="ranking-list" id="company-rankings-list">
+                    </div>
+            </section>
+
+            <aside class="investors-section">
+                <h3 class="section-title"><i class="ph-duotone ph-currency-dollar highlight"></i> Top FGC Investors</h3>
+                <div class="ranking-list" id="top-investors-list">
+                    </div>
+            </aside>
+
+        </div>
+    </main>
+
+    <script src="js/leaderboard.js?v=1"></script>
+</body>
+</html>

@@ -1064,3 +1064,126 @@ body {
     font-size: 11px;
     color: var(--text-muted);
 }
+/* =========================================
+   Leaderboard Page Styles
+   ========================================= */
+.lb-hero {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.lb-icon-box {
+    width: 60px;
+    height: 60px;
+    background: rgba(34, 197, 94, 0.2);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    color: var(--accent-green);
+    box-shadow: 0 0 20px rgba(34, 197, 94, 0.2);
+}
+
+.lb-hero h2 {
+    font-size: 32px;
+    font-weight: 800;
+}
+
+.ranking-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.rank-card {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.rank-circle {
+    width: 36px;
+    height: 36px;
+    background: var(--bg-dark);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--text-muted);
+}
+
+.rank-1 .rank-circle { background: rgba(251, 191, 36, 0.2); color: #fbbf24; } /* Gold */
+.rank-2 .rank-circle { background: rgba(156, 163, 175, 0.2); color: #9ca3af; } /* Silver */
+.rank-3 .rank-circle { background: rgba(180, 83, 9, 0.2); color: #b45309; } /* Bronze */
+
+.rank-content {
+    flex: 1;
+}
+
+.rank-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.rank-title {
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.rank-amount {
+    font-weight: 800;
+    color: var(--accent-green);
+}
+
+.rank-meta {
+    display: flex;
+    gap: 15px;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+}
+
+.rank-meta span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Slim Progress Bar */
+.lb-progress-track {
+    height: 6px;
+    background: var(--bg-dark);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.lb-progress-fill {
+    height: 100%;
+    background: var(--accent-green);
+    transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Investor Card Specifics */
+.investor-avatar {
+    width: 40px;
+    height: 40px;
+    background: var(--accent-green);
+    color: var(--bg-dark);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 18px;
+}
