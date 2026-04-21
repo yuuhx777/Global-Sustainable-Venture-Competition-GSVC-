@@ -105,27 +105,22 @@ function renderMyInvestments(myInvestments) {
     if (!list) return;
 
     if (!myInvestments || myInvestments.length === 0) {
-        list.innerHTML = `<li class="empty-state">No investments yet — pick a venture and invest! 🌱</li>`;
+        list.innerHTML = `<li class="empty-state"><i class="ph-duotone ph-leaf"></i> No investments yet.</li>`;
         return;
     }
 
-    // Group the investments by venture (so multiple investments in one idea are combined)
     const groupedInvestments = {};
     myInvestments.forEach(inv => {
         const title = inv.ventures.title;
-        if (!groupedInvestments[title]) {
-            groupedInvestments[title] = 0;
-        }
-        groupedInvestments[title] += Number(inv.amount);
+        groupedInvestments[title] = (groupedInvestments[title] || 0) + Number(inv.amount);
     });
 
-    list.innerHTML = ''; // Clear the "empty state" message
+    list.innerHTML = ''; 
 
-    // Create the HTML for each grouped investment
     Object.entries(groupedInvestments).forEach(([title, totalAmount]) => {
         const li = document.createElement('li');
         li.innerHTML = `
-            <div class="rank"><span class="medal-text">🌱</span> ${title}</div>
+            <div class="rank"><i class="ph-fill ph-plant" style="color: var(--accent-green); margin-right: 8px;"></i> ${title}</div>
             <div class="score highlight-text">${formatMoney(totalAmount)}</div>
         `;
         list.appendChild(li);
@@ -133,18 +128,20 @@ function renderMyInvestments(myInvestments) {
 }
 
 function renderLeaderboard(ventures) {
-    const list = document.querySelector('.leaderboard-list');
+    const list = document.getElementById('leaderboard-list');
     if (!list) return;
     
     list.innerHTML = ''; 
-
-    const medals = ['🥇', '🥈', '🥉'];
+    const medalColors = ['#fbbf24', '#9ca3af', '#b45309']; // Gold, Silver, Bronze
 
     ventures.forEach((v, index) => {
-        const rankDisplay = index < 3 ? `<span class="medal">${medals[index]}</span>` : `<span class="medal-text">#${index + 1}</span>`;
+        const rankDisplay = index < 3 
+            ? `<i class="ph-fill ph-medal" style="color: ${medalColors[index]}; font-size: 18px; margin-right: 8px;"></i>` 
+            : `<span class="medal-text" style="margin-right: 8px;">#${index + 1}</span>`;
+            
         const li = document.createElement('li');
         li.innerHTML = `
-            <div class="rank">${rankDisplay} ${v.title}</div>
+            <div class="rank" style="display:flex; align-items:center;">${rankDisplay} ${v.title}</div>
             <div class="score highlight-text">${formatMoney(v.total_invested)}</div>
         `;
         list.appendChild(li);
@@ -154,32 +151,33 @@ function renderLeaderboard(ventures) {
 function renderVentures(ventures) {
     const container = document.getElementById('dynamic-ventures');
     if (!container) return;
-    
     container.innerHTML = ''; 
 
     ventures.forEach(v => {
         const card = document.createElement('div');
-        card.className = 'venture-card';
+        card.className = 'venture-card glass-panel';
         card.innerHTML = `
             <div class="venture-header">
-                <div class="v-icon">💻</div>
+                <div class="v-icon"><i class="ph-duotone ph-laptop"></i></div>
                 <div class="v-info">
                     <h4>${v.title}</h4>
                     <p>${v.description}</p>
-                    <span class="tag">${v.category}</span>
+                    <span class="tag"><i class="ph ph-tag"></i> ${v.category}</span>
                 </div>
             </div>
             <div class="venture-stats">
                 <div class="v-stat">
-                    <span class="v-stat-label">📈 MONEY INVESTED</span>
+                    <span class="v-stat-label"><i class="ph ph-trend-up"></i> MONEY INVESTED</span>
                     <span class="v-stat-val highlight-text">${formatMoney(v.total_invested)}</span>
                 </div>
                 <div class="v-stat">
-                    <span class="v-stat-label">👥 INVESTORS</span>
+                    <span class="v-stat-label"><i class="ph ph-users"></i> INVESTORS</span>
                     <span class="v-stat-val">${v.investor_count}</span>
                 </div>
             </div>
-            <button class="invest-btn" onclick="investInVenture('${v.id}', '${v.title}')">💰 Invest Now</button>
+            <button class="invest-btn epic-btn" onclick="investInVenture('${v.id}', '${v.title}')">
+                <i class="ph-bold ph-currency-dollar"></i> Invest Now
+            </button>
         `;
         container.appendChild(card);
     });
@@ -313,16 +311,15 @@ function showToast(message, type = 'success') {
     const toast = document.createElement('div');
     toast.className = `toast toast-${type}`;
     
-    // Choose icon based on success or error
-    const icon = type === 'success' ? '✅' : '⚠️';
-    toast.innerHTML = `<span>${icon}</span> <span>${message}</span>`;
-
+    const icon = type === 'success' 
+        ? '<i class="ph-fill ph-check-circle" style="color: var(--accent-green); font-size: 20px;"></i>' 
+        : '<i class="ph-fill ph-warning-circle" style="color: #ef4444; font-size: 20px;"></i>';
+        
+    toast.innerHTML = `${icon} <span>${message}</span>`;
     container.appendChild(toast);
 
-    // Automatically remove the toast after 4 seconds
     setTimeout(() => {
         toast.classList.add('fade-out');
-        // Wait for the fade-out animation to finish before removing it from the DOM
         toast.addEventListener('animationend', () => toast.remove());
     }, 4000);
 }

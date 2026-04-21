@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
 
 
@@ -59,15 +60,15 @@
     <div id="dashboard-wrapper" style="display: none;">
         <header class="top-nav">
             <div class="logo-area">
-                <div class="logo-circle"></div>
+                <img src="assets/2.png" alt="SABS Logo" class="nav-logo">
                 <h1>Global Sustainability Venture Competition<span>2026</span></h1>
             </div>
             <nav class="nav-links">
-                <a href="#" class="active"><span class="icon">🚀</span> Dashboard</a>
-                <a href="#"><span class="icon">💰</span> Show Money</a>
-                <a href="#"><span class="icon">🏆</span> Leaderboard</a>
-                <a href="#"><span class="icon">⚙️</span> Admin</a>
-                <a href="#" id="logout-btn" style="margin-left: 20px; color: #ef4444;"><span class="icon">🚪</span> Logout</a>
+                <a href="#" class="active"><i class="ph ph-rocket-launch"></i> Dashboard</a>
+                <a href="#"><i class="ph ph-currency-krw"></i> Show Money</a>
+                <a href="#"><i class="ph ph-trophy"></i> Leaderboard</a>
+                <a href="#"><i class="ph ph-gear"></i> Admin</a>
+                <a href="#" id="logout-btn" class="logout-link"><i class="ph ph-sign-out"></i> Logout</a>
             </nav>
         </header>
 
@@ -75,15 +76,15 @@
             <section class="hero-section">
                 <div class="hero-text">
                     <div class="live-badge">
-                        <span class="dot"></span> SABS • LIVE EVENT
+                        <span class="pulse-dot"></span> SABS • LIVE EVENT
                     </div>
-                    <h2><span class="globe-icon">🌐</span> The Global Sustainable<br><span class="highlight">Venture Competition</span></h2>
-                    <p>You have <span class="highlight-text">₩1,000,000</span> to invest in sustainable ventures. Choose wisely — <strong>fund the future! 🌱</strong></p>
+                    <h2><i class="ph-duotone ph-globe-hemisphere-west globe-icon"></i> The Global Sustainable<br><span class="highlight text-glow">Venture Competition</span></h2>
+                    <p>You have <span class="highlight-text hero-balance">₩1,000,000</span> to invest in sustainable ventures. Choose wisely — <strong class="highlight">fund the future! <i class="ph-fill ph-plant"></i></strong></p>
                 </div>
                 
-                <div class="balance-card">
+                <div class="balance-card glass-panel">
                     <div class="balance-header">
-                        <div class="wallet-icon">💳</div>
+                        <div class="wallet-icon"><i class="ph-duotone ph-wallet"></i></div>
                         <div class="balance-info">
                             <span class="label">My Balance</span>
                             <h3>₩1,000,000</h3>
@@ -97,45 +98,46 @@
             </section>
 
             <section class="stats-row">
-                <div class="stat-card">
-                    <div class="stat-icon highlight-text">$</div>
-                    <h3>₩20,000</h3>
+                <div class="stat-card glass-panel">
+                    <div class="stat-icon highlight-text"><i class="ph-duotone ph-currency-dollar"></i></div>
+                    <h3>₩0</h3>
                     <p>Total Invested</p>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-icon">👥</div>
-                    <h3>1</h3>
+                <div class="stat-card glass-panel">
+                    <div class="stat-icon"><i class="ph-duotone ph-users"></i></div>
+                    <h3>0</h3>
                     <p>Total Investors</p>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-icon">🏢</div>
-                    <h3>4</h3>
+                <div class="stat-card glass-panel">
+                    <div class="stat-icon"><i class="ph-duotone ph-buildings"></i></div>
+                    <h3>0</h3>
                     <p>Active Ventures</p>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-icon">📈</div>
+                <div class="stat-card glass-panel">
+                    <div class="stat-icon"><i class="ph-duotone ph-trend-up"></i></div>
                     <h3>0</h3>
                     <p>Goals Reached</p>
                 </div>
             </section>
 
             <div class="content-grid">
-                
                 <section class="live-ventures">
-                    <h3 class="section-title">🌍 Live Ventures</h3>
+                    <h3 class="section-title"><i class="ph-fill ph-planet blue-icon"></i> Live Ventures</h3>
                     <div class="venture-list" id="dynamic-ventures"></div>
                 </section>
 
                 <aside class="sidebar">
-                    <div class="side-card">
-                        <h3 class="side-title">📋 My Investments</h3>
-                        <ul class="leaderboard-list" id="my-investments-list">
-                            <li class="empty-state">No investments yet — pick a venture and invest! 🌱</li>
-                        </ul>
+                    <div class="side-card glass-panel">
+                        <h3 class="side-title"><i class="ph-fill ph-trophy highlight-text"></i> FGC Leaderboard</h3>
+                        <ul class="leaderboard-list" id="leaderboard-list">
+                            </ul>
                     </div>
 
-
-
+                    <div class="side-card glass-panel">
+                        <h3 class="side-title"><i class="ph-fill ph-receipt"></i> My Investments</h3>
+                        <ul class="leaderboard-list" id="my-investments-list">
+                            </ul>
+                    </div>
                 </aside>
             </div>
         </main>
