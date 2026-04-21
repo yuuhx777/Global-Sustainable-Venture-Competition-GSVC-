@@ -1,11 +1,13 @@
 const SUPABASE_URL = 'https://tsweufcmgrcjtgiqlcji.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRzd2V1ZmNtZ3JjanRnaXFsY2ppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3ODA5MDQsImV4cCI6MjA5MjM1NjkwNH0.dMDqj_n0_w3sURSRo-_EOtrvLc5p8fu6WsAT7bs8qLI'; 
 
-let supabase;
+// Renamed from 'supabase' to 'supabaseClient' to avoid conflicting with the CDN's global object
+let supabaseClient;
 
 // 1. SAFE INITIALIZATION
 try {
-    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    // Use the global 'supabase' object from the CDN to create your client
+    supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     console.log("Supabase initialized successfully!");
 } catch (err) {
     console.error("Supabase failed to load. Is an adblocker blocking the CDN?", err);
@@ -17,7 +19,7 @@ window.handleGoogleLogin = async function() {
     const authMsg = document.getElementById('auth-msg');
     
     // Check if Supabase even loaded
-    if (!supabase) {
+    if (!supabaseClient) {
         authMsg.innerText = "Error: Database blocked. Try disabling your adblocker and refreshing.";
         authMsg.style.color = "#ef4444";
         return;
@@ -26,7 +28,7 @@ window.handleGoogleLogin = async function() {
     authMsg.innerText = "Redirecting to Google...";
     authMsg.style.color = "var(--accent-green)";
     
-    const { error } = await supabase.auth.signInWithOAuth({
+    const { error } = await supabaseClient.auth.signInWithOAuth({
         provider: 'google',
         options: {
             redirectTo: window.location.origin 
@@ -67,7 +69,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Logout Button
     document.getElementById('logout-btn')?.addEventListener('click', async (e) => {
         e.preventDefault();
-        if (supabase) await supabase.auth.signOut();
+        if (supabaseClient) await supabaseClient.auth.signOut();
         window.location.reload(); 
     });
 
@@ -77,9 +79,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const authMsg = document.getElementById('auth-msg');
 
     async function checkUser() {
-        if (!supabase) return; // Skip check if Supabase didn't load
+        if (!supabaseClient) return; // Skip check if Supabase didn't load
         
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { session } } = await supabaseClient.auth.getSession();
         
         if (session) {
             const userEmail = session.user.email;
@@ -88,7 +90,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 dashboardWrapper.style.display = 'block';
                 console.log("Logged in securely as:", userEmail);
             } else {
-                await supabase.auth.signOut();
+                await supabaseClient.auth.signOut();
                 authMsg.innerText = "Access denied: Must use a @faystonsongdo.org account.";
                 authMsg.style.color = "#ef4444"; 
             }
