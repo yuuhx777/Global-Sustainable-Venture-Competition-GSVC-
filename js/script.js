@@ -349,6 +349,8 @@ function setupRealtime() {
 // ==========================================
 // 5. STARTUP LISTENER
 // ==========================================
+let isAppInitialized = false; // THE FIX: Our security lock
+
 document.addEventListener("DOMContentLoaded", () => {
     const loginScreen = document.getElementById('login-screen');
     const dashboardWrapper = document.getElementById('dashboard-wrapper');
@@ -356,16 +358,25 @@ document.addEventListener("DOMContentLoaded", () => {
     if (supabaseClient) {
         supabaseClient.auth.onAuthStateChange((event, session) => {
             if (session && session.user.email.endsWith('@faystonsongdo.org')) {
+                // 1. Show the dashboard
                 loginScreen.style.display = 'none';
                 dashboardWrapper.style.display = 'block';
-                initializeUser(session.user);
+                
+                // 2. ONLY run the boot-up sequence if it hasn't run yet!
+                if (!isAppInitialized) {
+                    initializeUser(session.user);
+                    isAppInitialized = true; // Lock the door behind us
+                }
             } else {
+                // If they log out or session expires, kick them back to login
                 loginScreen.style.display = 'flex';
                 dashboardWrapper.style.display = 'none';
+                isAppInitialized = false; // Reset the lock
             }
         });
     }
 
+    // Logout Button
     document.getElementById('logout-btn')?.addEventListener('click', async (e) => {
         e.preventDefault();
         if (supabaseClient) await supabaseClient.auth.signOut();
