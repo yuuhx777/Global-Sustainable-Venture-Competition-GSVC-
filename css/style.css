@@ -413,7 +413,7 @@ body {
 }
 
 /* =========================================
-   Full Page Login Screen
+   Epic Full Page Login Screen
    ========================================= */
 .login-wrapper {
     position: fixed;
@@ -421,73 +421,203 @@ body {
     left: 0; 
     width: 100vw; 
     height: 100vh;
-    background-color: var(--bg-dark);
+    background-color: #05080f; /* Even darker for contrast */
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 9999;
-    /* Optional: A subtle grid pattern for the background */
-    background-image: radial-gradient(rgba(34, 197, 94, 0.1) 1px, transparent 1px);
-    background-size: 30px 30px;
+    overflow: hidden;
 }
 
-.login-card {
-    background-color: var(--bg-card);
+/* Background Animations */
+.bg-grid {
+    position: absolute;
+    width: 200vw;
+    height: 200vh;
+    background-image: 
+        linear-gradient(rgba(34, 197, 94, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(34, 197, 94, 0.05) 1px, transparent 1px);
+    background-size: 40px 40px;
+    transform: perspective(500px) rotateX(60deg) translateY(-100px) translateZ(-200px);
+    animation: gridMove 20s linear infinite;
+    z-index: 1;
+}
+
+.bg-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    z-index: 1;
+    opacity: 0.4;
+    animation: float 10s ease-in-out infinite;
+}
+
+.orb-1 {
+    width: 400px;
+    height: 400px;
+    background: #004d2c;
+    top: -100px;
+    left: -100px;
+}
+
+.orb-2 {
+    width: 300px;
+    height: 300px;
+    background: #0d2857;
+    bottom: -50px;
+    right: -50px;
+    animation-delay: -5s;
+}
+
+/* Glassmorphism Card */
+.glass-card {
+    background: rgba(17, 24, 39, 0.7);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     padding: 50px 40px;
-    border-radius: 16px;
-    border: 1px solid var(--border-color);
+    border-radius: 24px;
     width: 100%;
-    max-width: 420px;
+    max-width: 460px;
     text-align: center;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), var(--glow);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    z-index: 10;
+    position: relative;
+}
+
+/* Logo Styling */
+.logo-showcase {
+    margin-bottom: 25px;
+    display: flex;
+    justify-content: center;
+}
+
+.logo-container {
+    width: 90px;
+    height: 90px;
+    background: white; /* Keeps the SABS logo crisp */
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 30px rgba(34, 197, 94, 0.4), inset 0 0 10px rgba(0,0,0,0.1);
+    padding: 12px;
+    animation: pulseGlow 3s infinite;
+}
+
+.sabs-logo {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+/* Typography */
+.eyebrow {
+    color: var(--accent-green);
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+    display: block;
 }
 
 .login-card h2 {
-    font-size: 24px;
-    line-height: 1.3;
-    margin-bottom: 10px;
+    font-size: 28px;
+    line-height: 1.2;
+    margin-bottom: 15px;
+    font-weight: 800;
+}
+
+.text-glow {
+    text-shadow: 0 0 20px rgba(34, 197, 94, 0.5);
+}
+
+.divider {
+    height: 1px;
+    width: 40px;
+    background: rgba(255,255,255,0.2);
+    margin: 15px auto;
 }
 
 .login-card p {
     color: var(--text-muted);
     font-size: 14px;
-    margin-bottom: 30px;
+    margin-bottom: 35px;
+    letter-spacing: 0.5px;
 }
 
-.google-btn {
+/* Epic Button */
+.epic-btn {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 12px;
     width: 100%;
-    background-color: white;
-    color: #333;
+    background-color: #ffffff;
+    color: #111;
     border: none;
-    padding: 14px;
-    border-radius: 8px;
-    font-weight: 600;
-    font-size: 15px;
+    padding: 16px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 16px;
     cursor: pointer;
-    transition: transform 0.1s, box-shadow 0.2s;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
 }
 
-.google-btn svg {
-    width: 22px;
-    height: 22px;
+.epic-btn svg, .epic-btn span {
+    position: relative;
+    z-index: 2;
 }
 
-.google-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+.epic-btn svg {
+    width: 24px;
+    height: 24px;
 }
 
-.google-btn:active {
+.btn-glow {
+    position: absolute;
+    top: 0; left: -100%; width: 50%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent);
+    transform: skewX(-20deg);
+    transition: 0.5s;
+    z-index: 1;
+}
+
+.epic-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(34, 197, 94, 0.3);
+}
+
+.epic-btn:hover .btn-glow {
+    left: 200%;
+}
+
+.epic-btn:active {
     transform: translateY(0);
 }
 
 .auth-message {
     margin-top: 20px !important;
     font-size: 13px !important;
+    font-weight: 600;
     min-height: 20px;
+}
+
+/* Keyframes */
+@keyframes float {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-30px) scale(1.05); }
+}
+
+@keyframes gridMove {
+    0% { background-position: 0 0; }
+    100% { background-position: 0 40px; }
+}
+
+@keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 0 30px rgba(34, 197, 94, 0.2); }
+    50% { box-shadow: 0 0 50px rgba(34, 197, 94, 0.6); }
 }
