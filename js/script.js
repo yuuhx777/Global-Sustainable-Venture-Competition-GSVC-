@@ -144,38 +144,84 @@ function renderVentures(ventures) {
 }
 
 // ==========================================
-// 3. INVESTMENT LOGIC
+// 3. INVESTMENT LOGIC (MODAL)
 // ==========================================
-window.investInVenture = async function(ventureId, ventureTitle) {
-    const amountStr = prompt(`Investing in ${ventureTitle}\nYour Balance: ${formatMoney(currentBalance)}\n\nEnter amount to invest (numbers only):`);
-    
-    if (!amountStr) return; 
-    
-    const amount = parseInt(amountStr.replace(/,/g, ''));
-    
-    if (isNaN(amount) || amount <= 0) return alert("Please enter a valid number.");
-    if (amount > currentBalance) return alert("Insufficient funds!");
+let activeVentureId = null;
+let activeVentureTitle = null;
 
-    // 1. Deduct from User 
-    const newBalance = currentBalance - amount;
-    await supabaseClient.from('users').update({ balance: newBalance }).eq('id', currentUser.id);
+// This triggers when the user clicks "Invest Now" on a card
+window.investInVenture = function(ventureId, ventureTitle) {
+    activeVentureId = ventureId;
+    activeVentureTitle = ventureTitle;
+    
+    // Populate modal data
+    document.getElementById('modal-venture-title').innerText = `Invest in ${ventureTitle}`;
+    document.getElementById('modal-current-balance').innerText = formatMoney(currentBalance);
+    document.getElementById('invest-amount-input').value = ''; // Clear old input
+    
+    // Show modal
+    document.getElementById('invest-modal-overlay').style.display = 'flex';
+};
 
-    // 2. Add to Venture
-    const { data: venture } = await supabaseClient.from('ventures').select('*').eq('id', ventureId).single();
-    await supabaseClient.from('ventures').update({ 
-        total_invested: Number(venture.total_invested) + amount,
-        investor_count: venture.investor_count + 1 
-    }).eq('id', ventureId);
+// Modal Event Listeners
+document.addEventListener("DOMContentLoaded", () => {
+    const modalOverlay = document.getElementById('invest-modal-overlay');
+    const cancelBtn = document.getElementById('cancel-invest-btn');
+    const confirmBtn = document.getElementById('confirm-invest-btn');
+    const amountInput = document.getElementById('invest-amount-input');
 
-    // 3. Log Investment
-    await supabaseClient.from('investments').insert({
-        user_id: currentUser.id,
-        venture_id: ventureId,
-        amount: amount
+    // Close Modal
+    cancelBtn.addEventListener('click', () => {
+        modalOverlay.style.display = 'none';
+        activeVentureId = null;
     });
 
-    alert(`Successfully invested ${formatMoney(amount)} into ${ventureTitle}!`);
-};
+    // Execute Investment
+    confirmBtn.addEventListener('click', async () => {
+        const amount = parseInt(amountInput.value.replace(/,/g, ''));
+        
+        // Validation
+        if (isNaN(amount) || amount <= 0) return alert("Please enter a valid number.");
+        if (amount > currentBalance) return alert("Insufficient funds!");
+        
+        // Disable button to prevent double-clicks
+        confirmBtn.innerText = "Processing...";
+        confirmBtn.disabled = true;
+
+        try {
+            // 1. Deduct from User 
+            const newBalance = currentBalance - amount;
+            await supabaseClient.from('users').update({ balance: newBalance }).eq('id', currentUser.id);
+
+            // 2. Add to Venture
+            const { data: venture } = await supabaseClient.from('ventures').select('*').eq('id', activeVentureId).single();
+            await supabaseClient.from('ventures').update({ 
+                total_invested: Number(venture.total_invested) + amount,
+                investor_count: venture.investor_count + 1 
+            }).eq('id', activeVentureId);
+
+            // 3. Log Investment
+            await supabaseClient.from('investments').insert({
+                user_id: currentUser.id,
+                venture_id: activeVentureId,
+                amount: amount
+            });
+
+            // Success! Close modal and reset
+            modalOverlay.style.display = 'none';
+            // Optional: Give them a cleaner alert or toast notification here instead of a browser alert later
+            alert(`Successfully invested ${formatMoney(amount)} into ${activeVentureTitle}!`);
+            
+        } catch (error) {
+            console.error("Investment failed:", error);
+            alert("Something went wrong with the investment.");
+        } finally {
+            // Re-enable button
+            confirmBtn.innerText = "Confirm Investment";
+            confirmBtn.disabled = false;
+        }
+    });
+});
 
 // ==========================================
 // 4. REAL-TIME LIVE SYNC
