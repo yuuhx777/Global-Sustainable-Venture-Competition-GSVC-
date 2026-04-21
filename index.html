@@ -3,193 +3,197 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GSVC Dashboard | ssamjjang</title>
+    <title>GSVC | Fayston FGC</title>
     <link rel="stylesheet" href="css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-    <div id="auth-modal" class="modal-overlay">
-        <div class="auth-box">
-            <h3>GSVC Access</h3>
-            <p>Please sign in with your school account.</p>
+
+    <div id="login-screen" class="login-wrapper">
+        <div class="login-card">
+            <div class="logo-circle" style="margin: 0 auto 20px auto; width: 48px; height: 48px;"></div>
+            <h2>Global Sustainable<br><span class="highlight">Venture Competition</span></h2>
+            <p>Fayston Global Campus Exclusive</p>
             
-            <button id="google-login-btn" class="invest-btn" style="margin-top: 20px; display: flex; align-items: center; justify-content: center; gap: 10px;">
-                <svg style="width: 20px;" viewBox="0 0 24 24"><path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-                Sign in with Google
+            <button id="google-login-btn" class="google-btn">
+                <svg viewBox="0 0 24 24"><path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                Sign in with Fayston Google
             </button>
             
-            <p id="auth-msg" class="highlight-text" style="margin-top: 15px; font-size: 13px;"></p>
+            <p id="auth-msg" class="auth-message"></p>
         </div>
     </div>
 
-    <header class="top-nav">
-        <div class="logo-area">
-            <div class="logo-circle"></div>
-            <h1>GSVC <span>Fayston FGC</span></h1>
-        </div>
-        <nav class="nav-links">
-            <a href="#" class="active"><span class="icon">🚀</span> Dashboard</a>
-            <a href="#"><span class="icon">💰</span> Show Money</a>
-            <a href="#"><span class="icon">🏆</span> Leaderboard</a>
-            <a href="#"><span class="icon">⚙️</span> Admin</a>
-        </nav>
-    </header>
-
-    <main class="dashboard-container">
-        <section class="hero-section">
-            <div class="hero-text">
-                <div class="live-badge">
-                    <span class="dot"></span> SABS • LIVE EVENT
-                </div>
-                <h2><span class="globe-icon">🌐</span> The Global Sustainable<br><span class="highlight">Venture Competition</span></h2>
-                <p>You have <span class="highlight-text">₩1,000,000</span> to invest in sustainable ventures. Choose wisely — <strong>fund the future! 🌱</strong></p>
+    <div id="dashboard-wrapper" style="display: none;">
+        <header class="top-nav">
+            <div class="logo-area">
+                <div class="logo-circle"></div>
+                <h1>GSVC <span>Fayston FGC</span></h1>
             </div>
-            
-            <div class="balance-card">
-                <div class="balance-header">
-                    <div class="wallet-icon">💳</div>
-                    <div class="balance-info">
-                        <span class="label">나의 잔액</span>
-                        <h3>₩100만</h3>
+            <nav class="nav-links">
+                <a href="#" class="active"><span class="icon">🚀</span> Dashboard</a>
+                <a href="#"><span class="icon">💰</span> Show Money</a>
+                <a href="#"><span class="icon">🏆</span> Leaderboard</a>
+                <a href="#"><span class="icon">⚙️</span> Admin</a>
+                <a href="#" id="logout-btn" style="margin-left: 20px; color: #ef4444;"><span class="icon">🚪</span> Logout</a>
+            </nav>
+        </header>
+
+        <main class="dashboard-container">
+            <section class="hero-section">
+                <div class="hero-text">
+                    <div class="live-badge">
+                        <span class="dot"></span> SABS • LIVE EVENT
                     </div>
+                    <h2><span class="globe-icon">🌐</span> The Global Sustainable<br><span class="highlight">Venture Competition</span></h2>
+                    <p>You have <span class="highlight-text">₩1,000,000</span> to invest in sustainable ventures. Choose wisely — <strong>fund the future! 🌱</strong></p>
                 </div>
-                <div class="progress-bar-container">
-                    <div class="progress-bar" style="width: 100%;"></div>
-                </div>
-                <div class="progress-label">100% remaining</div>
-            </div>
-        </section>
-
-        <section class="stats-row">
-            <div class="stat-card">
-                <div class="stat-icon highlight-text">$</div>
-                <h3>₩2만</h3>
-                <p>총 투자액</p>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">👥</div>
-                <h3>1</h3>
-                <p>투자자 수</p>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">🏢</div>
-                <h3>4</h3>
-                <p>진행 중</p>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">📈</div>
-                <h3>0</h3>
-                <p>목표 달성</p>
-            </div>
-        </section>
-
-        <div class="content-grid">
-            
-            <section class="live-ventures">
-                <h3 class="section-title"><span class="blue-dot">🔵</span> 🌍 Live Ventures</h3>
                 
-                <div class="venture-list">
-                    <div class="venture-card">
-                        <div class="venture-header">
-                            <div class="v-icon">💻</div>
-                            <div class="v-info">
-                                <h4>Solar Drone Delivery</h4>
-                                <p>Sustainable farming, reimagined for the...</p>
-                                <span class="tag">Tech</span>
-                            </div>
+                <div class="balance-card">
+                    <div class="balance-header">
+                        <div class="wallet-icon">💳</div>
+                        <div class="balance-info">
+                            <span class="label">My Balance</span>
+                            <h3>₩1,000,000</h3>
                         </div>
-                        <div class="venture-stats">
-                            <div class="v-stat">
-                                <span class="v-stat-label">📈 MONEY INVESTED</span>
-                                <span class="v-stat-val highlight-text">₩2만</span>
-                            </div>
-                            <div class="v-stat">
-                                <span class="v-stat-label">👥 INVESTORS</span>
-                                <span class="v-stat-val">2</span>
-                            </div>
-                        </div>
-                        <button class="invest-btn">💰 Invest Now</button>
                     </div>
-
-                    <div class="venture-card">
-                        <div class="venture-header">
-                            <div class="v-icon">💻</div>
-                            <div class="v-info">
-                                <h4>Yeonwoo & Chloe P. Business In...</h4>
-                                <p>YeonCH</p>
-                                <span class="tag">Tech</span>
-                            </div>
-                        </div>
-                        <div class="venture-stats">
-                            <div class="v-stat">
-                                <span class="v-stat-label">📈 MONEY INVESTED</span>
-                                <span class="v-stat-val highlight-text">₩0</span>
-                            </div>
-                            <div class="v-stat">
-                                <span class="v-stat-label">👥 INVESTORS</span>
-                                <span class="v-stat-val">0</span>
-                            </div>
-                        </div>
-                        <button class="invest-btn">💰 Invest Now</button>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" style="width: 100%;"></div>
                     </div>
-
-                    <div class="venture-card">
-                        <div class="venture-header">
-                            <div class="v-icon">💻</div>
-                            <div class="v-info">
-                                <h4>ThirstAI (tAI)</h4>
-                                <p>Smarter AI shouldn't cost the Earth.</p>
-                                <span class="tag">Tech</span>
-                            </div>
-                        </div>
-                        <div class="venture-stats">
-                            <div class="v-stat">
-                                <span class="v-stat-label">📈 MONEY INVESTED</span>
-                                <span class="v-stat-val highlight-text">₩0</span>
-                            </div>
-                            <div class="v-stat">
-                                <span class="v-stat-label">👥 INVESTORS</span>
-                                <span class="v-stat-val">0</span>
-                            </div>
-                        </div>
-                        <button class="invest-btn">💰 Invest Now</button>
-                    </div>
+                    <div class="progress-label">100% remaining</div>
                 </div>
             </section>
 
-            <aside class="sidebar">
+            <section class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-icon highlight-text">$</div>
+                    <h3>₩20,000</h3>
+                    <p>Total Invested</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">👥</div>
+                    <h3>1</h3>
+                    <p>Total Investors</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🏢</div>
+                    <h3>4</h3>
+                    <p>Active Ventures</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📈</div>
+                    <h3>0</h3>
+                    <p>Goals Reached</p>
+                </div>
+            </section>
+
+            <div class="content-grid">
                 
-                <div class="side-card">
-                    <h3 class="side-title">🏆 FGC Leaderboard</h3>
-                    <ul class="leaderboard-list">
-                        <li>
-                            <div class="rank"><span class="medal">🥇</span> Solar Drone Delivery</div>
-                            <div class="score highlight-text">₩2만</div>
-                        </li>
-                        <li>
-                            <div class="rank"><span class="medal">🥈</span> Yeonwoo & Chloe P. Business Invention</div>
-                            <div class="score highlight-text">₩0</div>
-                        </li>
-                        <li>
-                            <div class="rank"><span class="medal">🥉</span> ThirstAI (tAI)</div>
-                            <div class="score highlight-text">₩0</div>
-                        </li>
-                        <li>
-                            <div class="rank"><span class="medal-text">#4</span> Portable Air Shield Mask</div>
-                            <div class="score highlight-text">₩0</div>
-                        </li>
-                    </ul>
-                </div>
+                <section class="live-ventures">
+                    <h3 class="section-title"><span class="blue-dot">🔵</span> 🌍 Live Ventures</h3>
+                    
+                    <div class="venture-list">
+                        <div class="venture-card">
+                            <div class="venture-header">
+                                <div class="v-icon">💻</div>
+                                <div class="v-info">
+                                    <h4>Solar Drone Delivery</h4>
+                                    <p>Sustainable farming, reimagined for the...</p>
+                                    <span class="tag">Tech</span>
+                                </div>
+                            </div>
+                            <div class="venture-stats">
+                                <div class="v-stat">
+                                    <span class="v-stat-label">📈 MONEY INVESTED</span>
+                                    <span class="v-stat-val highlight-text">₩20,000</span>
+                                </div>
+                                <div class="v-stat">
+                                    <span class="v-stat-label">👥 INVESTORS</span>
+                                    <span class="v-stat-val">2</span>
+                                </div>
+                            </div>
+                            <button class="invest-btn">💰 Invest Now</button>
+                        </div>
 
-                <div class="side-card">
-                    <h3 class="side-title">📋 My Investments</h3>
-                    <p class="empty-state">No investments yet — pick a venture and invest! 🌱</p>
-                </div>
+                        <div class="venture-card">
+                            <div class="venture-header">
+                                <div class="v-icon">💻</div>
+                                <div class="v-info">
+                                    <h4>Yeonwoo & Chloe P. Business In...</h4>
+                                    <p>YeonCH</p>
+                                    <span class="tag">Tech</span>
+                                </div>
+                            </div>
+                            <div class="venture-stats">
+                                <div class="v-stat">
+                                    <span class="v-stat-label">📈 MONEY INVESTED</span>
+                                    <span class="v-stat-val highlight-text">₩0</span>
+                                </div>
+                                <div class="v-stat">
+                                    <span class="v-stat-label">👥 INVESTORS</span>
+                                    <span class="v-stat-val">0</span>
+                                </div>
+                            </div>
+                            <button class="invest-btn">💰 Invest Now</button>
+                        </div>
 
-            </aside>
-        </div>
-    </main>
+                        <div class="venture-card">
+                            <div class="venture-header">
+                                <div class="v-icon">💻</div>
+                                <div class="v-info">
+                                    <h4>ThirstAI (tAI)</h4>
+                                    <p>Smarter AI shouldn't cost the Earth.</p>
+                                    <span class="tag">Tech</span>
+                                </div>
+                            </div>
+                            <div class="venture-stats">
+                                <div class="v-stat">
+                                    <span class="v-stat-label">📈 MONEY INVESTED</span>
+                                    <span class="v-stat-val highlight-text">₩0</span>
+                                </div>
+                                <div class="v-stat">
+                                    <span class="v-stat-label">👥 INVESTORS</span>
+                                    <span class="v-stat-val">0</span>
+                                </div>
+                            </div>
+                            <button class="invest-btn">💰 Invest Now</button>
+                        </div>
+                    </div>
+                </section>
+
+                <aside class="sidebar">
+                    <div class="side-card">
+                        <h3 class="side-title">🏆 FGC Leaderboard</h3>
+                        <ul class="leaderboard-list">
+                            <li>
+                                <div class="rank"><span class="medal">🥇</span> Solar Drone Delivery</div>
+                                <div class="score highlight-text">₩20,000</div>
+                            </li>
+                            <li>
+                                <div class="rank"><span class="medal">🥈</span> Yeonwoo & Chloe P. Business Invention</div>
+                                <div class="score highlight-text">₩0</div>
+                            </li>
+                            <li>
+                                <div class="rank"><span class="medal">🥉</span> ThirstAI (tAI)</div>
+                                <div class="score highlight-text">₩0</div>
+                            </li>
+                            <li>
+                                <div class="rank"><span class="medal-text">#4</span> Portable Air Shield Mask</div>
+                                <div class="score highlight-text">₩0</div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="side-card">
+                        <h3 class="side-title">📋 My Investments</h3>
+                        <p class="empty-state">No investments yet — pick a venture and invest! 🌱</p>
+                    </div>
+
+                </aside>
+            </div>
+        </main>
+    </div>
 
     <script src="js/script.js"></script>
 </body>
