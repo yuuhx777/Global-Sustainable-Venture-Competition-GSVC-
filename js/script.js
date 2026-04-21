@@ -180,41 +180,31 @@ document.addEventListener("DOMContentLoaded", () => {
     confirmBtn.addEventListener('click', async () => {
         const amount = parseInt(amountInput.value.replace(/,/g, ''));
         
-        // Validation
+        // Frontend Validation
         if (isNaN(amount) || amount <= 0) return alert("Please enter a valid number.");
         if (amount > currentBalance) return alert("Insufficient funds!");
         
-        // Disable button to prevent double-clicks
+        // Disable button to prevent double-clicking
         confirmBtn.innerText = "Processing...";
         confirmBtn.disabled = true;
 
         try {
-            // 1. Deduct from User 
-            const newBalance = currentBalance - amount;
-            await supabaseClient.from('users').update({ balance: newBalance }).eq('id', currentUser.id);
-
-            // 2. Add to Venture
-            const { data: venture } = await supabaseClient.from('ventures').select('*').eq('id', activeVentureId).single();
-            await supabaseClient.from('ventures').update({ 
-                total_invested: Number(venture.total_invested) + amount,
-                investor_count: venture.investor_count + 1 
-            }).eq('id', activeVentureId);
-
-            // 3. Log Investment
-            await supabaseClient.from('investments').insert({
-                user_id: currentUser.id,
-                venture_id: activeVentureId,
-                amount: amount
+            // FIRE THE SECURE DATABASE FUNCTION
+            const { error } = await supabaseClient.rpc('process_investment', {
+                p_venture_id: activeVentureId,
+                p_amount: amount
             });
 
-            // Success! Close modal and reset
+            // If the database rejects it (e.g. not enough money), throw the error
+            if (error) throw error;
+
+            // Success! Close modal
             modalOverlay.style.display = 'none';
-            // Optional: Give them a cleaner alert or toast notification here instead of a browser alert later
             alert(`Successfully invested ${formatMoney(amount)} into ${activeVentureTitle}!`);
             
         } catch (error) {
             console.error("Investment failed:", error);
-            alert("Something went wrong with the investment.");
+            alert("Transaction failed! The bank rejected the transfer.");
         } finally {
             // Re-enable button
             confirmBtn.innerText = "Confirm Investment";
