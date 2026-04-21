@@ -28,7 +28,12 @@ let prevData = {
 
 // The Magic Number Roller Function
 function animateNumber(element, start, end, duration, formatType = 'money') {
-    if (start === end) return; // No need to animate if nothing changed
+    // FIX: If the numbers are the same, don't animate, but FORCE the text to update 
+    // so it doesn't get stuck on the HTML default of "₩0"
+    if (start === end) {
+        element.innerText = formatType === 'money' ? formatMoney(end) : end;
+        return; 
+    }
     
     let startTimestamp = null;
     const step = (timestamp) => {
