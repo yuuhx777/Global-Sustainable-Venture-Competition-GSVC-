@@ -721,3 +721,57 @@ body {
     flex: 2;
     padding: 12px; /* Adjust padding to match cancel btn */
 }
+
+/* =========================================
+   Toast Notifications
+   ========================================= */
+.toast-container {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    z-index: 10001; /* Ensures it sits above everything, even the modal */
+    pointer-events: none; /* Lets users click through the empty space */
+}
+
+.toast {
+    background: rgba(17, 24, 39, 0.9);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: var(--text-main);
+    padding: 16px 24px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    animation: slideInRight 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    pointer-events: auto; /* Makes the actual toast clickable if needed */
+}
+
+.toast-success {
+    border-left: 4px solid var(--accent-green);
+}
+
+.toast-error {
+    border-left: 4px solid #ef4444; /* Red */
+}
+
+.toast.fade-out {
+    animation: fadeOutRight 0.3s ease-in forwards;
+}
+
+/* Keyframes for the snappy animations */
+@keyframes slideInRight {
+    0% { opacity: 0; transform: translateX(100%); }
+    100% { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fadeOutRight {
+    0% { opacity: 1; transform: translateX(0); }
+    100% { opacity: 0; transform: translateX(100%); }
+}

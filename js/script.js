@@ -180,9 +180,13 @@ document.addEventListener("DOMContentLoaded", () => {
     confirmBtn.addEventListener('click', async () => {
         const amount = parseInt(amountInput.value.replace(/,/g, ''));
         
-        // Frontend Validation
-        if (isNaN(amount) || amount <= 0) return alert("Please enter a valid number.");
-        if (amount > currentBalance) return alert("Insufficient funds!");
+        // Frontend Validation using Toasts
+        if (isNaN(amount) || amount <= 0) {
+            return showToast("Please enter a valid number.", "error");
+        }
+        if (amount > currentBalance) {
+            return showToast("Insufficient funds! Check your balance.", "error");
+        }
         
         // Disable button to prevent double-clicking
         confirmBtn.innerText = "Processing...";
@@ -195,16 +199,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 p_amount: amount
             });
 
-            // If the database rejects it (e.g. not enough money), throw the error
+            // If the database rejects it, throw the error
             if (error) throw error;
 
-            // Success! Close modal
+            // Success! Close modal and show success toast
             modalOverlay.style.display = 'none';
-            alert(`Successfully invested ${formatMoney(amount)} into ${activeVentureTitle}!`);
+            showToast(`Successfully invested ${formatMoney(amount)} into ${activeVentureTitle}!`, "success");
             
         } catch (error) {
             console.error("Investment failed:", error);
-            alert("Transaction failed! The bank rejected the transfer.");
+            showToast("Transaction failed! The bank rejected the transfer.", "error");
         } finally {
             // Re-enable button
             confirmBtn.innerText = "Confirm Investment";
@@ -256,3 +260,27 @@ document.addEventListener("DOMContentLoaded", () => {
         window.location.reload(); 
     });
 });
+
+// ==========================================
+// TOAST NOTIFICATION HELPER
+// ==========================================
+function showToast(message, type = 'success') {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    
+    // Choose icon based on success or error
+    const icon = type === 'success' ? '✅' : '⚠️';
+    toast.innerHTML = `<span>${icon}</span> <span>${message}</span>`;
+
+    container.appendChild(toast);
+
+    // Automatically remove the toast after 4 seconds
+    setTimeout(() => {
+        toast.classList.add('fade-out');
+        // Wait for the fade-out animation to finish before removing it from the DOM
+        toast.addEventListener('animationend', () => toast.remove());
+    }, 4000);
+}
