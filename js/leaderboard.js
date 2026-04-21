@@ -109,10 +109,23 @@ function calculateAndRenderTopInvestors(investments) {
         const oldTotal = prevData.investors[investor.email] || 0;
         
         // Extract a display name from the email (e.g., "ahn.david" -> "David Ahn")
-        let displayName = investor.email.split('@')[0];
-        if (displayName.includes('.')) {
-            const parts = displayName.split('.');
-            displayName = parts[1].charAt(0).toUpperCase() + parts[1].slice(1) + ' ' + parts[0].charAt(0).toUpperCase() + parts[0].slice(1);
+        let displayName = "Unknown";
+        const localPart = investor.email.split('@')[0];
+        
+        if (localPart.includes('.')) {
+            const parts = localPart.split('.');
+            let lastNamePart = parts[0];
+            let firstNamePart = parts[1];
+
+            // Regex to strip any graduation year digits from the start of the last name
+            let cleanLastName = lastNamePart.replace(/^\d+/, '');
+
+            // Capitalize both names
+            const capitalize = (str) => str ? str.charAt(0).toUpperCase() + str.slice(1).toLowerCase() : "";
+            
+            displayName = `${capitalize(firstNamePart)} ${capitalize(cleanLastName)}`;
+        } else {
+            displayName = localPart; // Fallback just in case
         }
         
         const initial = displayName.charAt(0).toUpperCase();
