@@ -16,8 +16,41 @@ try {
 const formatMoney = (amount) => `₩${parseInt(amount).toLocaleString()}`;
 
 // ==========================================
-// 1. AUTHENTICATION & PROFILE INITIALIZATION
+// 1. AUTHENTICATION, PROFILE & ANIMATION UTILS
 // ==========================================
+let prevData = {
+    balance: 0,
+    globalInvested: 0,
+    globalInvestors: 0,
+    ventures: {},      // Stores { invested, investors } by venture ID
+    leaderboard: {}    // Stores scores by venture title
+};
+
+// The Magic Number Roller Function
+function animateNumber(element, start, end, duration, formatType = 'money') {
+    if (start === end) return; // No need to animate if nothing changed
+    
+    let startTimestamp = null;
+    const step = (timestamp) => {
+        if (!startTimestamp) startTimestamp = timestamp;
+        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+        
+        // Easing function for that buttery smooth slow-down at the end
+        const easeProgress = 1 - Math.pow(1 - progress, 3);
+        const current = Math.floor(easeProgress * (end - start) + start);
+
+        element.innerText = formatType === 'money' ? formatMoney(current) : current;
+
+        if (progress < 1) {
+            window.requestAnimationFrame(step);
+        } else {
+            // Guarantee it ends on the exact correct number
+            element.innerText = formatType === 'money' ? formatMoney(end) : end;
+        }
+    };
+    window.requestAnimationFrame(step);
+}
+
 window.handleGoogleLogin = async function() {
     if (!supabaseClient) return;
     const cleanRedirectUrl = window.location.origin + window.location.pathname;
@@ -26,58 +59,59 @@ window.handleGoogleLogin = async function() {
 
 async function initializeUser(user) {
     currentUser = user;
-    
     const { data: dbUser, error } = await supabaseClient.from('users').select('*').eq('id', user.id).single();
     
-    if (error) {
-        console.error("Error fetching user data:", error);
-        return;
-    }
+    if (error) return console.error("Error fetching user data:", error);
 
-    currentUserRole = dbUser.role; // Save role so we know if they started with 10M or 500k
-    updateBalanceUI(dbUser.balance);
+    currentUserRole = dbUser.role; 
+    
+    // Animate balance from 0 to starting amount on initial load
+    updateBalanceUI(dbUser.balance, true);
+    
     fetchDashboardData();
     setupRealtime(); 
 }
 
-function updateBalanceUI(balance) {
-    currentBalance = balance;
-    
-    // 1. Update the Text Numbers
+function updateBalanceUI(newBalance, isInitialLoad = false) {
     const mainBalanceEl = document.querySelector('.balance-info h3');
-    if (mainBalanceEl) mainBalanceEl.innerText = formatMoney(balance);
+    const heroBalanceEl = document.querySelector('.hero-text .highlight-text');
     
-    const heroBalance = document.querySelector('.hero-text .highlight-text');
-    if (heroBalance) heroBalance.innerText = formatMoney(balance);
+    // Animate the text
+    if (mainBalanceEl) animateNumber(mainBalanceEl, prevData.balance, newBalance, 1000, 'money');
+    if (heroBalanceEl) animateNumber(heroBalanceEl, prevData.balance, newBalance, 1000, 'money');
 
-    // 2. Update the Progress Bar
+    // Update Progress Bar
     const startingBalance = currentUserRole === 'judge' ? 10000000 : 500000;
-    const percent = Math.max(0, (balance / startingBalance) * 100).toFixed(0);
+    const percent = Math.max(0, (newBalance / startingBalance) * 100).toFixed(0);
     
     const progressBar = document.querySelector('.progress-bar');
-    if (progressBar) progressBar.style.width = `${percent}%`;
+    if (progressBar) {
+        // If initial load, start bar at 0 and grow it. Otherwise just update smoothly.
+        if (isInitialLoad) {
+            progressBar.style.width = '0%';
+            setTimeout(() => progressBar.style.width = `${percent}%`, 100);
+        } else {
+            progressBar.style.width = `${percent}%`;
+        }
+    }
     
     const progressLabel = document.querySelector('.progress-label');
     if (progressLabel) progressLabel.innerText = `${percent}% remaining`;
+
+    currentBalance = newBalance;
+    prevData.balance = newBalance; // Save for next time
 }
 
 // ==========================================
-// 2. FETCHING & RENDERING DATA
+// 2. FETCHING & RENDERING DATA (WITH ANIMATIONS)
 // ==========================================
 async function fetchDashboardData() {
-    // Fetch Ventures
     const { data: ventures } = await supabaseClient.from('ventures').select('*').order('total_invested', { ascending: false });
-    
-    // Fetch Global Investments for stats
     const { data: investments } = await supabaseClient.from('investments').select('*');
 
-    // Fetch ONLY the current user's investments, and JOIN the venture title
     const { data: myInvestments } = await supabaseClient
         .from('investments')
-        .select(`
-            amount,
-            ventures ( title )
-        `)
+        .select(`amount, ventures ( title )`)
         .eq('user_id', currentUser.id);
 
     // Calculate Global Stats
@@ -89,15 +123,101 @@ async function fetchDashboardData() {
         uniqueInvestors.add(inv.user_id);
     });
 
-    // Update Top Stats UI
-    document.querySelectorAll('.stat-card h3')[0].innerText = formatMoney(totalInvestedGlobal); 
-    document.querySelectorAll('.stat-card h3')[1].innerText = uniqueInvestors.size; 
-    document.querySelectorAll('.stat-card h3')[2].innerText = ventures.length; 
+    const activeVenturesCount = ventures.length;
 
-    // Render the UI
+    // Animate Top Stats
+    const elTotalInvested = document.getElementById('stat-total-invested');
+    const elTotalInvestors = document.getElementById('stat-total-investors');
+    const elActiveVentures = document.getElementById('stat-active-ventures');
+
+    if (elTotalInvested) animateNumber(elTotalInvested, prevData.globalInvested, totalInvestedGlobal, 1200, 'money');
+    if (elTotalInvestors) animateNumber(elTotalInvestors, prevData.globalInvestors, uniqueInvestors.size, 1200, 'number');
+    // Active ventures rarely change live, but we'll animate it on load
+    if (elActiveVentures) animateNumber(elActiveVentures, 0, activeVenturesCount, 1200, 'number'); 
+
+    // Update memory
+    prevData.globalInvested = totalInvestedGlobal;
+    prevData.globalInvestors = uniqueInvestors.size;
+
     renderVentures(ventures);
     renderLeaderboard(ventures);
-    renderMyInvestments(myInvestments); // <-- New function call
+    renderMyInvestments(myInvestments); 
+}
+
+function renderVentures(ventures) {
+    const container = document.getElementById('dynamic-ventures');
+    if (!container) return;
+    container.innerHTML = ''; 
+
+    ventures.forEach((v, index) => {
+        const card = document.createElement('div');
+        // Add staggered fade-in to the cards
+        card.className = `venture-card glass-panel animate-up delay-${(index % 4) + 1}`;
+        
+        // Grab old values to animate from, default to 0 if new
+        const oldInvested = prevData.ventures[v.id]?.invested || 0;
+        const oldInvestors = prevData.ventures[v.id]?.investors || 0;
+
+        card.innerHTML = `
+            <div class="venture-header">
+                <div class="v-icon"><i class="ph-duotone ph-laptop"></i></div>
+                <div class="v-info">
+                    <h4>${v.title}</h4>
+                    <p>${v.description}</p>
+                    <span class="tag"><i class="ph ph-tag"></i> ${v.category}</span>
+                </div>
+            </div>
+            <div class="venture-stats">
+                <div class="v-stat">
+                    <span class="v-stat-label"><i class="ph ph-trend-up"></i> MONEY INVESTED</span>
+                    <span class="v-stat-val highlight-text" id="v-invested-${v.id}">₩0</span>
+                </div>
+                <div class="v-stat">
+                    <span class="v-stat-label"><i class="ph ph-users"></i> INVESTORS</span>
+                    <span class="v-stat-val" id="v-investors-${v.id}">0</span>
+                </div>
+            </div>
+            <button class="invest-btn epic-btn" onclick="investInVenture('${v.id}', '${v.title}')">
+                <i class="ph-bold ph-currency-dollar"></i> Invest Now
+            </button>
+        `;
+        container.appendChild(card);
+
+        // Trigger animations immediately after appending to DOM
+        animateNumber(document.getElementById(`v-invested-${v.id}`), oldInvested, v.total_invested, 1000, 'money');
+        animateNumber(document.getElementById(`v-investors-${v.id}`), oldInvestors, v.investor_count, 1000, 'number');
+
+        // Update memory
+        prevData.ventures[v.id] = { invested: v.total_invested, investors: v.investor_count };
+    });
+}
+
+function renderLeaderboard(ventures) {
+    const list = document.getElementById('leaderboard-list');
+    if (!list) return;
+    list.innerHTML = ''; 
+    const medalColors = ['#fbbf24', '#9ca3af', '#b45309']; 
+
+    ventures.forEach((v, index) => {
+        const oldScore = prevData.leaderboard[v.title] || 0;
+
+        const rankDisplay = index < 3 
+            ? `<i class="ph-fill ph-medal" style="color: ${medalColors[index]}; font-size: 18px; margin-right: 8px;"></i>` 
+            : `<span class="medal-text" style="margin-right: 8px;">#${index + 1}</span>`;
+            
+        const li = document.createElement('li');
+        li.innerHTML = `
+            <div class="rank" style="display:flex; align-items:center;">${rankDisplay} ${v.title}</div>
+            <div class="score highlight-text" id="lb-score-${index}">₩0</div>
+        `;
+        list.appendChild(li);
+
+        // Animate Leaderboard numbers
+        animateNumber(document.getElementById(`lb-score-${index}`), oldScore, v.total_invested, 1000, 'money');
+
+        // Update memory
+        prevData.leaderboard[v.title] = v.total_invested;
+    });
 }
 
 function renderMyInvestments(myInvestments) {
@@ -117,69 +237,16 @@ function renderMyInvestments(myInvestments) {
 
     list.innerHTML = ''; 
 
-    Object.entries(groupedInvestments).forEach(([title, totalAmount]) => {
+    Object.entries(groupedInvestments).forEach(([title, totalAmount], index) => {
         const li = document.createElement('li');
         li.innerHTML = `
             <div class="rank"><i class="ph-fill ph-plant" style="color: var(--accent-green); margin-right: 8px;"></i> ${title}</div>
-            <div class="score highlight-text">${formatMoney(totalAmount)}</div>
+            <div class="score highlight-text" id="my-inv-${index}">₩0</div>
         `;
         list.appendChild(li);
-    });
-}
 
-function renderLeaderboard(ventures) {
-    const list = document.getElementById('leaderboard-list');
-    if (!list) return;
-    
-    list.innerHTML = ''; 
-    const medalColors = ['#fbbf24', '#9ca3af', '#b45309']; // Gold, Silver, Bronze
-
-    ventures.forEach((v, index) => {
-        const rankDisplay = index < 3 
-            ? `<i class="ph-fill ph-medal" style="color: ${medalColors[index]}; font-size: 18px; margin-right: 8px;"></i>` 
-            : `<span class="medal-text" style="margin-right: 8px;">#${index + 1}</span>`;
-            
-        const li = document.createElement('li');
-        li.innerHTML = `
-            <div class="rank" style="display:flex; align-items:center;">${rankDisplay} ${v.title}</div>
-            <div class="score highlight-text">${formatMoney(v.total_invested)}</div>
-        `;
-        list.appendChild(li);
-    });
-}
-
-function renderVentures(ventures) {
-    const container = document.getElementById('dynamic-ventures');
-    if (!container) return;
-    container.innerHTML = ''; 
-
-    ventures.forEach(v => {
-        const card = document.createElement('div');
-        card.className = 'venture-card glass-panel';
-        card.innerHTML = `
-            <div class="venture-header">
-                <div class="v-icon"><i class="ph-duotone ph-laptop"></i></div>
-                <div class="v-info">
-                    <h4>${v.title}</h4>
-                    <p>${v.description}</p>
-                    <span class="tag"><i class="ph ph-tag"></i> ${v.category}</span>
-                </div>
-            </div>
-            <div class="venture-stats">
-                <div class="v-stat">
-                    <span class="v-stat-label"><i class="ph ph-trend-up"></i> MONEY INVESTED</span>
-                    <span class="v-stat-val highlight-text">${formatMoney(v.total_invested)}</span>
-                </div>
-                <div class="v-stat">
-                    <span class="v-stat-label"><i class="ph ph-users"></i> INVESTORS</span>
-                    <span class="v-stat-val">${v.investor_count}</span>
-                </div>
-            </div>
-            <button class="invest-btn epic-btn" onclick="investInVenture('${v.id}', '${v.title}')">
-                <i class="ph-bold ph-currency-dollar"></i> Invest Now
-            </button>
-        `;
-        container.appendChild(card);
+        // Assuming you want these animated on load too (starting from 0)
+        animateNumber(document.getElementById(`my-inv-${index}`), 0, totalAmount, 1000, 'money');
     });
 }
 

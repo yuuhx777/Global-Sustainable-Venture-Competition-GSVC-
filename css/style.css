@@ -873,3 +873,27 @@ body {
     margin-right: 0;         /* Clear the old margin */
     margin-top: -4px;        /* Tiny optical adjustment so the top of the globe matches the top of the "T" */
 }
+
+/* =========================================
+   Entry Animations
+   ========================================= */
+@keyframes fadeInUp {
+    0% { opacity: 0; transform: translateY(30px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+.animate-up {
+    animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    opacity: 0; /* Stays invisible until animation starts */
+}
+
+/* Delay modifiers for the staggered effect */
+.delay-1 { animation-delay: 0.1s; }
+.delay-2 { animation-delay: 0.2s; }
+.delay-3 { animation-delay: 0.3s; }
+.delay-4 { animation-delay: 0.4s; }
+
+/* Smooth progress bar transitions */
+.progress-bar {
+    transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
+}
