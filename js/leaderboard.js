@@ -39,7 +39,6 @@ async function fetchLeaderboardData() {
     renderCompanyRankings(ventures);
 
     // Render Top Investors
-    calculateAndRenderTopInvestors(investments);
 }
 
 function renderCompanyRankings(ventures) {
