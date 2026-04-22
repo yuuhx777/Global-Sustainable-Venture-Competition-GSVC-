@@ -26,7 +26,15 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 async function fetchAdminData() {
-    const { data: ventures } = await supabaseClient.from('ventures').select('*').order('created_at', { ascending: true });
+    // FIX: Ordered by 'title' instead of the missing 'created_at' column
+    const { data: ventures, error } = await supabaseClient.from('ventures').select('*').order('title', { ascending: true });
+    
+    // Safety check: if Supabase gets mad, tell us why in the console!
+    if (error) {
+        console.error("Failed to load admin data:", error);
+        return;
+    }
+
     renderAdminList(ventures);
 }
 
