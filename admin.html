@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Companies | GSVC Admin</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <header class="top-nav">
+        <div class="logo-area">
+            <img src="assets/2.png" alt="SABS Logo" class="nav-logo">
+            <h1>GSVC <span>Fayston FGC</span></h1>
+        </div>
+        <nav class="nav-links">
+            <a href="index.html"><i class="ph-duotone ph-rocket-launch"></i> Dashboard</a>
+            <a href="show-money.html"><i class="ph-duotone ph-currency-krw"></i> Show Money</a>
+            <a href="leaderboard.html"><i class="ph-duotone ph-trophy"></i> Leaderboard</a>
+            <a href="admin.html" class="active"><i class="ph-duotone ph-gear"></i> Admin</a>
+        </nav>
+    </header>
+
+    <main class="dashboard-container">
+        <div class="admin-header animate-up delay-1">
+            <div class="admin-title-area">
+                <div class="v-icon" style="background: rgba(34, 197, 94, 0.2); color: var(--accent-green);"><i class="ph-fill ph-buildings"></i></div>
+                <h2>Manage Companies</h2>
+            </div>
+            <div class="admin-actions">
+                <button id="reset-db-btn" class="cancel-btn" style="color: #ef4444; border-color: rgba(239, 68, 68, 0.3);"><i class="ph-bold ph-warning"></i> Reset Data</button>
+                <button id="add-company-btn" class="invest-btn epic-btn" style="width: auto; padding: 12px 20px;"><i class="ph-bold ph-plus"></i> Add Company</button>
+            </div>
+        </div>
+
+        <div class="admin-list animate-up delay-2" id="admin-company-list">
+            </div>
+    </main>
+
+    <div id="admin-modal-overlay" class="modal-overlay" style="display: none;">
+        <div class="modal-card glass-card" style="max-width: 500px; text-align: left;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 id="admin-modal-title" style="margin: 0;">Edit Company</h3>
+                <button id="close-modal-btn" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:20px;"><i class="ph-bold ph-x"></i></button>
+            </div>
+            
+            <div class="form-group">
+                <label>Company Name *</label>
+                <input type="text" id="comp-name" class="form-input">
+            </div>
+            <div class="form-group">
+                <label>Tagline *</label>
+                <input type="text" id="comp-tagline" class="form-input">
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea id="comp-desc" class="form-input" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Category</label>
+                <select id="comp-category" class="form-input">
+                    <option value="Tech">Tech</option>
+                    <option value="Eco">Eco</option>
+                    <option value="Health">Health</option>
+                    <option value="Education">Education</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Logo URL (optional)</label>
+                <input type="text" id="comp-logo" class="form-input" placeholder="https://...">
+            </div>
+            
+            <div class="form-group toggle-group" style="display: flex; align-items: center; gap: 10px; margin-top: 15px;">
+                <label class="switch">
+                  <input type="checkbox" id="comp-active">
+                  <span class="slider round"></span>
+                </label>
+                <span style="font-size: 14px; font-weight: 500;">Active (accepting investments)</span>
+            </div>
+
+            <button id="save-company-btn" class="epic-btn invest-btn" style="width: 100%; margin-top: 25px;">Update Company</button>
+        </div>
+    </div>
+
+    <div id="toast-container" class="toast-container"></div>
+    <script src="js/admin.js?v=1"></script>
+</body>
+</html>
