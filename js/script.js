@@ -64,15 +64,37 @@ window.handleGoogleLogin = async function() {
 
 async function initializeUser(user) {
     currentUser = user;
-    const { data: dbUser, error } = await supabaseClient.from('users').select('*').eq('id', user.id).single();
     
-    if (error) return console.error("Error fetching user data:", error);
+    // 1. Try to fetch the user's profile and money
+    let { data: dbUser, error } = await supabaseClient.from('users').select('*').eq('id', user.id).single();
+    
+    // 2. THE AUTO-HEALER: If they exist in Google Auth but got deleted from our public table
+    if (error && error.code === 'PGRST116') { // PGRST116 is the Supabase error for "Row not found"
+        console.warn("User missing from public database. Auto-healing...");
+        
+        const isJudge = ['ahn.david@faystonsongdo.org', 'song.stephanie@faystonsongdo.org', 'lim.isaac@faystonsongdo.org', 'chiok.taylor@faystonsongdo.org'].includes(user.email);
+        
+        const newProfile = {
+            id: user.id,
+            email: user.email,
+            balance: isJudge ? 10000000 : 500000,
+            role: isJudge ? 'judge' : 'student'
+        };
+        
+        // Quietly insert them back into the public table
+        await supabaseClient.from('users').insert([newProfile]);
+        
+        // Assign the new profile so the script can keep running
+        dbUser = newProfile; 
+        
+    } else if (error) {
+        // If it's some other random network error, stop and log it
+        return console.error("Error fetching user data:", error);
+    }
 
+    // 3. Continue the boot-up sequence normally
     currentUserRole = dbUser.role; 
-    
-    // Animate balance from 0 to starting amount on initial load
     updateBalanceUI(dbUser.balance, true);
-    
     fetchDashboardData();
     setupRealtime(); 
 }
