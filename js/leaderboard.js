@@ -33,7 +33,6 @@ async function fetchLeaderboardData() {
     const { data: ventures } = await supabaseClient.from('ventures').select('*').order('total_invested', { ascending: false });
     
     // 2. Fetch all investments joined with user emails
-    const { data: investments } = await supabaseClient.from('investments').select('amount, users(email)');
 
     // Render Companies
     renderCompanyRankings(ventures);
@@ -86,66 +85,7 @@ function renderCompanyRankings(ventures) {
     });
 }
 
-function calculateAndRenderTopInvestors(investments) {
-    const list = document.getElementById('top-investors-list');
-    if (!list || !investments) return;
 
-    // Group money by user email
-    const grouped = {};
-    investments.forEach(inv => {
-        const email = inv.users?.email || 'Unknown Investor';
-        grouped[email] = (grouped[email] || 0) + Number(inv.amount);
-    });
-
-    // Convert to array and sort highest to lowest
-    const sortedInvestors = Object.entries(grouped)
-        .map(([email, total]) => ({ email, total }))
-        .sort((a, b) => b.total - a.total);
-
-    list.innerHTML = '';
-
-    sortedInvestors.forEach((investor, index) => {
-        const oldTotal = prevData.investors[investor.email] || 0;
-        
-        // Extract a display name from the email (e.g., "ahn.david" -> "David Ahn")
-        let displayName = "Unknown";
-        const localPart = investor.email.split('@')[0];
-        
-        if (localPart.includes('.')) {
-            const parts = localPart.split('.');
-            let lastNamePart = parts[0];
-            let firstNamePart = parts[1];
-
-            // Regex to strip any graduation year digits from the start of the last name
-            let cleanLastName = lastNamePart.replace(/^\d+/, '');
-
-            // Capitalize both names
-            const capitalize = (str) => str ? str.charAt(0).toUpperCase() + str.slice(1).toLowerCase() : "";
-            
-            displayName = `${capitalize(firstNamePart)} ${capitalize(cleanLastName)}`;
-        } else {
-            displayName = localPart; // Fallback just in case
-        }
-        
-        const initial = displayName.charAt(0).toUpperCase();
-
-        const card = document.createElement('div');
-        card.className = 'rank-card glass-panel';
-        card.innerHTML = `
-            <div class="investor-avatar">${initial}</div>
-            <div class="rank-content">
-                <div class="rank-header" style="margin-bottom: 0;">
-                    <div class="rank-title">${displayName}</div>
-                    <div class="rank-amount" id="lb-inv-${index}">₩0</div>
-                </div>
-            </div>
-        `;
-        list.appendChild(card);
-
-        animateNumber(document.getElementById(`lb-inv-${index}`), oldTotal, investor.total, 1200, 'money');
-        prevData.investors[investor.email] = investor.total;
-    });
-}
 
 // -------------------------------------
 // Init & Realtime
