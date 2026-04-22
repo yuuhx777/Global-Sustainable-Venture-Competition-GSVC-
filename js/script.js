@@ -330,17 +330,24 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // ==========================================
-// 4. REAL-TIME LIVE SYNC
+// 4. REAL-TIME LIVE SYNC & KILL SWITCH
 // ==========================================
 function setupRealtime() {
     supabaseClient.channel('custom-all-channel')
         .on('postgres_changes', { event: '*', schema: 'public', table: 'ventures' }, () => {
-            // If ANY venture gets new money, instantly fetch the new sorted data to update the Leaderboard!
             fetchDashboardData(); 
         })
         .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'users' }, (payload) => {
             if (payload.new.id === currentUser.id) {
                 updateBalanceUI(payload.new.balance);
+            }
+        })
+        // THE GLOBAL KILL SWITCH: Listens for Admin Account Wipes
+        .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'users' }, async (payload) => {
+            if (currentUser && payload.old.id === currentUser.id) {
+                console.warn("Account wiped by Admin. Forcing logout...");
+                await supabaseClient.auth.signOut();
+                window.location.reload(); // Instantly kicks them to the login screen
             }
         })
         .subscribe();

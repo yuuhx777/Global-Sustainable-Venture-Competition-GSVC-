@@ -154,6 +154,17 @@ document.getElementById('reset-db-btn').addEventListener('click', async () => {
     }
 });
 
+// ---------------------------
+// Admin Global Kill Switch
+// ---------------------------
+supabaseClient.channel('admin-kill-switch')
+    .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'users' }, async () => {
+        // If the users table is being wiped, sign the admin out immediately
+        await supabaseClient.auth.signOut();
+        window.location.href = 'index.html';
+    })
+    .subscribe();
+
 // Toast Helper
 function showToast(message, type = 'success') {
     const container = document.getElementById('toast-container');
